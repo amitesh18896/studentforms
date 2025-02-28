@@ -1,0 +1,65 @@
+﻿@model StudentForms.Models.StudentViewModel
+
+<h2>Add New Student</h2>
+
+@using (Html.BeginForm("Create", "Student", FormMethod.Post))
+{
+    <div class="form-group">
+        <label>First Name</label>
+        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Last Name</label>
+        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Gender</label>
+        @Html.DropDownListFor(m => m.Gender, new SelectList(new[] { "Male", "Female" }), "Select Gender", new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Mobile</label>
+        @Html.TextBoxFor(m => m.Mobile, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Country</label>
+        @Html.DropDownList("CountryId", ViewBag.Countries as SelectList, "Select Country", new { @class = "form-control", id = "ddlCountry" })
+    </div>
+
+    <div class="form-group">
+        <label>State</label>
+        <select id="ddlState" name="StateId" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label>City</label>
+        <select id="ddlCity" name="CityId" class="form-control"></select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+}
+
+@section scripts {
+    <script>
+        $("#ddlCountry").change(function () {
+            $.getJSON('/Student/GetStates', { countryId: $(this).val() }, function (data) {
+                $("#ddlState").empty().append('<option>Select State</option>');
+                $.each(data, function (i, item) {
+                    $("#ddlState").append('<option value="' + item.Id + '">' + item.Name + '</option>');
+                });
+            });
+        });
+
+        $("#ddlState").change(function () {
+            $.getJSON('/Student/GetCities', { stateId: $(this).val() }, function (data) {
+                $("#ddlCity").empty().append('<option>Select City</option>');
+                $.each(data, function (i, item) {
+                    $("#ddlCity").append('<option value="' + item.Id + '">' + item.Name + '</option>');
+                });
+            });
+        });
+    </script>
+}
